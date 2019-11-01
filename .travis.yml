@@ -1,0 +1,32 @@
+language: generic
+
+sudo: false
+cache:
+  directories:
+  - "$HOME/.racket"
+env:
+  global:
+  - RACKET_DIR=~/racket
+  - RACKET_VERSION=6.12
+
+addons:
+  apt:
+    packages:
+    - python-pygments
+    - fonts-linuxlibertine
+
+before_install:
+- export DISPLAY=:99.0
+- sh -e /etc/init.d/xvfb start
+- "./install-racket.sh"
+- export PATH="${RACKET_DIR}/bin:${PATH}"
+install:
+- racket website.rkt -db && cd $TRAVIS_BUILD_DIR
+script:
+- echo 0
+deploy:
+  skip_cleanup: true
+  provider: script
+  script: "./deploy.sh"
+  on:
+    branch: master
