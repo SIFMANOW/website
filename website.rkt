@@ -36,17 +36,14 @@
 
 (define (navbar . current-page)
   @html:header{
-    @element["nav" class: "navbar navbar-expand-md navbar-dark fixed-top bg-dark"]{
+    @element["nav" class: "navbar navbar-expand-sm navbar-dark fixed-top bg-dark"]{
       @div[class: "container"]{
         @a[class: "navbar-brand" href: (build-path "/" (dict-ref html-navbar-file-table "Home"))]{Home}
-        @button[class: "navbar-toggler"
-                type: "button"
-                data-toggle: "collapse"
-                data-target: "#navbarCollapse"
-                aria-controls: "navbarCollapse"
-                aria-expanded: "false"
-                aria-label: "Toggle navigation"]{
-          @span[class: "navbar-toggler-icon"]}}}})
+        @(for/list ([title-pair (in-list html-navbar-file-table)])
+          (cond
+            [(equal? (car title-pair) (car current-page))
+             @li[class: "nav-item"]{@a[href: "#" (car title-pair)]}]
+            [else @li[class: "nav-item"]{@a[href: (build-path "/" (cdr title-pair)) (car title-pair)]}]))}}})
 
 (define (footer #:rest [rest '()] . v)
   (list*
@@ -78,12 +75,14 @@
 
 ;; ===================================================================================================
 
-(module files-mod racket
-  (provide file-table)
-  (define file-table
-    '(
-      ("Home" . "index.scrbl")
-      )))
+(module files-mod sml
+  file-table list ()
+  '("Home" . "index.scrbl")
+  '("Who we are" . "about.scrbl")
+  '("Our Work" . "work.scrbl")
+  '("Learn More" . "learn.scrbl")
+  '("Latest Updates" . "updates.scrbl")
+  '("Contact Us" . "contact.scrbl"))
 (require 'files-mod
          (for-syntax 'files-mod))
 
