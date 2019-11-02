@@ -1,0 +1,24 @@
+.navbar-inner,
+.navbar-header {
+    min-height: 70px !important;
+}
+
+.navbar {
+    margin-bottom: 0px;
+}
+
+.navbar-nav > li > a {
+    line-height: 40px;
+    font-size: 25px;
+    margin: 20px;
+}
+
+.blurb {
+    text-align: center;
+}
+
+.footer-color {
+    background-color: #F8F8F8;
+    padding-top: 20px;
+    padding-bottom: 50px;
+}

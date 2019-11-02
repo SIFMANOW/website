@@ -4,6 +4,7 @@
 (require syntax/parse/define
          scribble/html/html
          (prefix-in html: scribble/html/extra)
+         racket/format
          racket/dict
          racket/runtime-path
          racket/path
@@ -14,6 +15,7 @@
          pkg
          pkg/lib
          (for-syntax racket/base
+                     racket/list
                      racket/string
                      racket/dict))
 
@@ -29,36 +31,52 @@
     @meta[http-equiv: "X-UA-Compatible" content: "IE=edge"]
     @meta[name: "viewport" 'content: "width=device-width, initial-scale=1"]
     @;@link[rel: "stylesheet" type: "text/css" href: "/css/bootstrap.min.css"]
-    @;@link[rel: "stylesheet" type: "text/css" href: "/css/custom.css"]
+    @link[rel: "stylesheet" type: "text/css" href: "/css/custom.css"]
     @;@link[rel: "shortcut icon" href: "logo/tiny.png" type: "image/x-icon"]
+    @link[rel: "stylesheet"
+          href: "https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity: "sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+          crossorigin: "anonymous"]
+    @script[src: "https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"]
+    @script[src: "https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+            integrity: "sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+            crossorigin: "anonymous"]
     @title[v]{ - SIF MA NOW}
     @rest})
 
 (define (navbar . current-page)
   @html:header{
-    @element["nav" class: "navbar navbar-expand-sm navbar-dark fixed-top bg-dark"]{
-      @div[class: "container"]{
-        @a[class: "navbar-brand" href: (build-path "/" (dict-ref html-navbar-file-table "Home"))]{Home}
-        @(for/list ([title-pair (in-list html-navbar-file-table)])
-          (cond
-            [(equal? (car title-pair) (car current-page))
-             @li[class: "nav-item"]{@a[href: "#" (car title-pair)]}]
-            [else @li[class: "nav-item"]{@a[href: (build-path "/" (cdr title-pair)) (car title-pair)]}]))}}})
+ @element["nav" class: "navbar navbar-expand-sm navbar-light bg-light"]{
+  @a[class: "navbar-brand" href: (build-path "/" (car (dict-ref html-navbar-file-table "Home")))]{
+   @img[src: "res/cropped-SIF-Logo-Cross-LOW-RES.jpg" alt: "logo"]}
+  @ul[class: "navbar-nav"]{
+   @(for/list ([title-pair (in-list html-navbar-file-table)])
+      (define cur-page (equal? (car title-pair) (car current-page)))
+      (define subs (caddr title-pair))
+      @li[class: @~a{nav-item @(if cur-page
+                                   "active"
+                                   "")
+                              @(if (null? subs)
+                                   ""
+                                   "dropdown")}]{
+       @a[class: @~a{nav-link @(if (null? subs)
+                                   ""
+                                   "dropdown-toggle")}
+          href: (if (or cur-page (not (null? subs))) "#" (build-path "/" (cadr title-pair)))
+          @(unless (null? subs) data-toggle:)
+          @(unless (null? subs) "dropdown")
+          (car title-pair)]
+       @(unless (null? subs)
+          @div[class: "dropdown-menu"]{
+            @(for/list ([item (in-list subs)])
+               @a[class: "dropdown-item" href: (build-path "/" (cdr item)) (car item)])})})}}})
 
 (define (footer #:rest [rest '()] . v)
   (list*
    @html:footer[class: "container"]{
      @div[class: "copyright"]{
        @p[style: "float:left"]{Copyright © 2019 ????}}}
-   ;@script[src: "https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"]
    ;@script[src: "/js/bootstrap.min.js"]
-   @link[rel: "stylesheet"
-         href: "https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
-         integrity: "sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
-         crossorigin: "anonymous"]
-   @script[src: "https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
-           integrity: "sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
-           crossorigin: "anonymous"]
    rest))
 
 (define (page #:title title
@@ -75,24 +93,32 @@
 
 ;; ===================================================================================================
 
+;; Each entry in the file table is:
+;; (Pair Name (Pair Path (Listof (Pair Subname AnchorPath))))
 (module files-mod sml
   file-table list ()
-  '("Home" . "index.scrbl")
-  '("Who we are" . "about.scrbl")
-  '("Our Work" . "work.scrbl")
-  '("Learn More" . "learn.scrbl")
-  '("Latest Updates" . "updates.scrbl")
-  '("Contact Us" . "contact.scrbl"))
+  '("Home" "index.scrbl")
+  '("Who we are" "about.scrbl")
+  '("Our Work" "work.scrbl")
+  '("Learn More" "learn.scrbl"
+                 ("What do the experts say?" . "")
+                 ("National news coverage" . "")
+                 ("SIFMA NOW in the news" . "")
+                 ("Videos" . ""))
+  '("Latest Updates" "updates.scrbl")
+  '("Contact Us" "contact.scrbl"))
 (require 'files-mod
          (for-syntax 'files-mod))
 
 (define-runtime-path-list files
-  (list* (dict-values file-table)))
+  (map car (dict-values file-table)))
 
 (define html-navbar-file-table
-  (for/list ([f (in-list (dict-keys file-table))]
-             [v (in-list (dict-values file-table))])
-    (cons f (path-replace-suffix v ".html"))))
+  (for/list ([(f v) (in-dict file-table)])
+    (define path (path-replace-suffix (car v) ".html"))
+    (list f path
+          (for/list ([(k* v*) (in-dict (cdr v))])
+            (cons k* (format "~a#~a" path v*))))))
 
 ;; ===================================================================================================
 
