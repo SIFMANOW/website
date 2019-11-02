@@ -21,18 +21,17 @@
                      #%module-begin)
          (rename-out [-module-begin #%module-begin])
          read read-syntax get-info
-         page
-         ->)
+         page)
 
 (define (header #:rest [rest '()] . v)
   @head{
     @meta[charset: "utf-8"]
     @meta[http-equiv: "X-UA-Compatible" content: "IE=edge"]
     @meta[name: "viewport" 'content: "width=device-width, initial-scale=1"]
-    @link[rel: "stylesheet" type: "text/css" href: "/css/bootstrap.min.css"]
-    @link[rel: "stylesheet" type: "text/css" href: "/css/custom.css"]
+    @;@link[rel: "stylesheet" type: "text/css" href: "/css/bootstrap.min.css"]
+    @;@link[rel: "stylesheet" type: "text/css" href: "/css/custom.css"]
     @;@link[rel: "shortcut icon" href: "logo/tiny.png" type: "image/x-icon"]
-    @title[v]{ - Leif Andersen}
+    @title[v]{ - SIF MA NOW}
     @rest})
 
 (define (navbar . current-page)
@@ -53,9 +52,16 @@
   (list*
    @html:footer[class: "container"]{
      @div[class: "copyright"]{
-       @p[style: "float:left"]{Copyright © 2014-2018 Leif Andersen}}}
-   @script[src: "https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"]
-   @script[src: "/js/bootstrap.min.js"]
+       @p[style: "float:left"]{Copyright © 2019 ????}}}
+   ;@script[src: "https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"]
+   ;@script[src: "/js/bootstrap.min.js"]
+   @link[rel: "stylesheet"
+         href: "https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+         integrity: "sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+         crossorigin: "anonymous"]
+   @script[src: "https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+           integrity: "sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+           crossorigin: "anonymous"]
    rest))
 
 (define (page #:title title
@@ -69,22 +75,6 @@
             @navbar[title]
             @html:main[role: "main"]{@content}
             @footer[#:rest footer-rest]}}))
-
-(define (-> . path)
-  (define cv:doc (dynamic-require "cv.sml" 'doc))
-  (define-values (start path*)
-    (if (and (pair? path) (dict? (car path)))
-        (values (car path) (cdr path))
-        (values cv:doc path)))
-  (let loop ([table start]
-             [path path*])
-     (cond [(null? path) table]
-           [(pair? (car path))
-            (loop (dict-ref table (car (car path)) (cdr (car path)))
-                  (cdr path))]
-           [else
-            (loop (dict-ref table (car path))
-                  (cdr path))])))
 
 ;; ===================================================================================================
 
