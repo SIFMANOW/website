@@ -88,7 +88,7 @@
           @header[#:rest header-rest]{@title}
           @body[id: "pn-top"]{
             @navbar[title]
-            @html:main[role: "main"]{@content}
+            @div[class: "container"]{@html:main[role: "main"]{@content}}
             @footer[#:rest footer-rest]}}))
 
 ;; ===================================================================================================
