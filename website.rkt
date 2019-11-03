@@ -105,10 +105,10 @@
   '("Who we are" "about.scrbl")
   '("Our Work" "work.scrbl")
   '("Learn More" "learn.scrbl"
-                 ("What do the experts say?" . "")
-                 ("National news coverage" . "")
-                 ("SIFMA NOW in the news" . "")
-                 ("Videos" . ""))
+                 ("What do the experts say?" . "experts")
+                 ("National news coverage" . "national")
+                 ("SIFMA NOW in the news" . "news")
+                 ("Videos" . "videos"))
   '("Latest Updates" "updates.scrbl")
   '("Contact Us" "contact.scrbl"))
 (require 'files-mod
