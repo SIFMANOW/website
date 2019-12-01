@@ -1,7 +1,10 @@
 #!/usr/bin/env racket
 #lang at-exp racket/base
 
-(require syntax/parse/define
+(require racket/class
+         racket/file
+         racket/pretty
+         syntax/parse/define
          scribble/html/html
          (prefix-in html: scribble/html/extra)
          racket/format
@@ -14,6 +17,7 @@
          web-server/dispatchers/dispatch
          pkg
          pkg/lib
+         (prefix-in pict: pict)
          (for-syntax racket/base
                      racket/list
                      racket/string
@@ -178,12 +182,22 @@
                  #:launch-browser? #t))
 
 (define (build)
+  ;; Build HTML files
   (for ([f (in-list files)])
     (unless (equal? (path-get-extension f) #".html")
       (with-output-to-file (path-replace-suffix f ".html")
         #:exists 'replace
         (lambda ()
-          (dynamic-require f 0))))))
+          (dynamic-require f 0)))))
+  ;; Build Images
+  (make-directory* (build-path project-root-dir "bldres"))
+  (for ([i (in-directory (build-path project-root-dir "res"))])
+    (define img (pict:scale-to-fit (pict:bitmap i) 300 300))
+    (define type (case (path-get-extension i)
+                   [(#".jpg" #".jpeg") 'jpeg]
+                   [(#".png") 'png]))
+    (define save-location (build-path project-root-dir "bldres" (file-name-from-path i)))
+    (send (pict:pict->bitmap img) save-file save-location type)))
 
 (define deps '("sml"))
 
