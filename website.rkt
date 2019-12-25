@@ -173,7 +173,7 @@
 
 (define-runtime-path project-root-dir ".")
 
-(define (preview)
+(define (preview!)
   (serve/servlet (lambda (_) (next-dispatcher))
                  #:servlet-path "/index.html"
                  #:extra-files-paths (list project-root-dir)
@@ -181,7 +181,7 @@
                  #:listen-ip #f
                  #:launch-browser? #t))
 
-(define (build)
+(define (build!)
   ;; Build HTML files
   (for ([f (in-list files)])
     (unless (equal? (path-get-extension f) #".html")
@@ -217,7 +217,7 @@
     [("-d" "--deps") "Install the required deps to build the website"
      (install-deps)]
     [("-b" "--build") "Build Website"
-     (build)]
+     (build!)]
     [("-p" "--preview") "Preview Website"
-     (preview)]
+     (preview!)]
     )))
