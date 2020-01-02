@@ -3,7 +3,7 @@ set -e
 
 tee ~/.netrc > /dev/null <<EOF
 machine github.com
-login video-bot
+login sifmanow-bot
 password $GH_TOKEN
 EOF
 

@@ -90,13 +90,16 @@
 (define (page #:title title
               #:header-rest [header-rest '()]
               #:footer-rest [footer-rest '()]
+              #:container? [container? #t]
               . content)
   (list @doctype{html}
         @html[lang: "en"]{
           @header[#:rest header-rest]{@title}
           @body[id: "pn-top"]{
             @navbar[title]
-            @div[class: "container"]{@html:main[role: "main"]{@content}}
+            @(if container?
+                 @div[class: "container"]{@html:main[role: "main"]{@content}}
+                 @html:main[role: "main"]{@content})
             @footer[#:rest footer-rest]}}))
 
 ;; ===================================================================================================
