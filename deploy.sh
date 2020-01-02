@@ -7,7 +7,7 @@ login sifmanow-bot
 password $GH_TOKEN
 EOF
 
-git remote add deploy https://github.com/LeifAndersen/leifandersen.github.io.git
+git remote add deploy https://github.com/sifmanow/sifmanow.github.io.git
 git config --global user.email "info@sifmanow.org"
 git config --global user.name "sifmanow Bot"
 
