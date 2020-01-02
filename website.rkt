@@ -106,18 +106,19 @@
 
 ;; Each entry in the file table is:
 ;; (Pair Name (Pair Path (Listof (Pair Subname AnchorPath))))
-(module files-mod sml
-  file-table list ()
-  '("Home" "index.scrbl")
-  '("Who we are" "about.scrbl")
-  '("Our Work" "work.scrbl")
-  '("Learn More" "learn.scrbl"
-                 ("What do the experts say?" . "experts")
-                 ("National news coverage" . "national")
-                 ("SIFMA NOW in the news" . "news")
-                 ("Videos" . "videos"))
-  '("Latest Updates" "updates.scrbl")
-  '("Contact Us" "contact.scrbl"))
+(module files-mod racket
+  (provide file-table)
+  (define file-table
+  '(("Home" "index.scrbl")
+    ("Who we are" "about.scrbl")
+    ("Our Work" "work.scrbl")
+    ("Learn More" "learn.scrbl"
+                  ("What do the experts say?" . "experts")
+                  ("National news coverage" . "national")
+                  ("SIFMA NOW in the news" . "news")
+                  ("Videos" . "videos"))
+    ("Latest Updates" "updates.scrbl")
+    ("Contact Us" "contact.scrbl"))))
 (require 'files-mod
          (for-syntax 'files-mod))
 
@@ -202,7 +203,8 @@
     (define save-location (build-path project-root-dir "bldres" (file-name-from-path i)))
     (send (pict:pict->bitmap img) save-file save-location type)))
 
-(define deps '("sml"))
+(define deps '())
+;(define deps '("sml"))
 
 (define (install-deps)
   (for ([i (in-list deps)])
