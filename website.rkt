@@ -27,7 +27,9 @@
                      #%module-begin)
          (rename-out [-module-begin #%module-begin])
          read read-syntax get-info
-         page)
+         page
+         make-id
+         ref-id)
 
 (define (header #:rest [rest '()] . v)
   @head{
@@ -111,12 +113,12 @@
   (define file-table
   '(("Home" "index.scrbl")
     ("Who we are" "about.scrbl")
-    ("Our Work" "work.scrbl")
-    ("Learn More" "learn.scrbl"
-                  ("What do the experts say?" . "experts")
-                  ("National news coverage" . "national")
-                  ("SIFMA NOW in the news" . "news")
-                  ("Videos" . "videos"))
+    ("Gallery" "gallery.scrbl")
+    ("SIF/SCS" "sif.scrbl"
+               ("What do the experts say?" . "experts")
+               ("National news coverage" . "national")
+               ("SIFMA NOW in the news" . "news")
+               ("Videos" . "videos"))
     ("Latest Updates" "updates.scrbl")
     ("Contact Us" "contact.scrbl"))))
 (require 'files-mod
@@ -202,6 +204,13 @@
                    [(#".png") 'png]))
     (define save-location (build-path project-root-dir "bldres" (file-name-from-path i)))
     (send (pict:pict->bitmap img) save-file save-location type)))
+
+;; ===================================================================================================
+
+(define (make-id) (symbol->string (gensym)))
+(define (ref-id id) (format "#~a" id))
+
+;; ===================================================================================================
 
 (define deps '())
 ;(define deps '("sml"))

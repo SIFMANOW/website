@@ -1,3 +1,4 @@
 #lang reader "website.rkt"
 
-@page[#:title "Blog"]
+@page[#:title "Blog"]{
+ Nothing yet...}
