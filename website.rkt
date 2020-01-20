@@ -25,6 +25,7 @@
 
 (provide (except-out (all-from-out scribble/html/lang)
                      #%module-begin)
+         (all-from-out racket/format)
          (rename-out [-module-begin #%module-begin])
          read read-syntax get-info
          page
@@ -157,7 +158,7 @@
   #:read-syntax scribble:read-syntax-inside
   #:whole-body-readers? #t
   #:info        reader-info
-  #:language (build-path this-dir "website.rkt")
+  #:language `(submod ,(build-path this-dir "website.rkt") lang)
 
   (require (prefix-in scribble: scribble/reader)
            (only-in scribble/base/reader scribble-base-reader-info)
@@ -212,17 +213,29 @@
 
 ;; ===================================================================================================
 
-(define deps '())
-;(define deps '("sml"))
+(module deps racket
+  (provide (all-defined-out))
+  (require pkg
+           pkg/lib)
+  (define deps '("sml"
+                 "markdown"))
 
-(define (install-deps)
-  (for ([i (in-list deps)])
-    (cond [(and (hash-has-key? (installed-pkg-table) i))
-           (pkg-update-command #:deps 'search-auto i #:no-setup #t)]
-          [else
-           (pkg-install-command #:deps 'search-auto i #:no-setup #t)])))
+  (define (install-deps [check-update? #t])
+    (for ([i (in-list deps)])
+      (cond [(hash-has-key? (installed-pkg-table) i)
+             (when check-update?
+               (pkg-update-command #:deps 'search-auto i #:no-setup #t))]
+            [else
+             (pkg-install-command #:deps 'search-auto i #:no-setup #t)]))))
+(require 'deps
+         (for-syntax 'deps))
 
-(module+ main
+;; ===================================================================================================
+
+(module* main #f
+  (begin-for-syntax
+    (with-handlers* ([exn:fail? (λ (e) (log-warning "build-deps: ~a" e))])
+      (install-deps #f)))
   (require racket/cmdline)
   (void
    (command-line
@@ -235,3 +248,13 @@
     [("-p" "--preview") "Preview Website"
      (preview!)]
     )))
+
+;; ===================================================================================================
+
+(module* lang racket
+  (require (submod "..")
+           markdown)
+  (provide (all-from-out (submod ".."))
+           markdown)
+  (define (markdown . str)
+    (literal (map xexpr->string (parse-markdown (apply string-append str))))))
