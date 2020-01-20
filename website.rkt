@@ -190,6 +190,8 @@
                  #:launch-browser? #t))
 
 (define (build!)
+  ;; Make bldres dir
+  (make-directory* (build-path project-root-dir "bldres"))
   ;; Build HTML files
   (for ([f (in-list files)])
     (unless (equal? (path-get-extension f) #".html")
@@ -198,7 +200,6 @@
         (lambda ()
           (dynamic-require f 0)))))
   ;; Build Images
-  (make-directory* (build-path project-root-dir "bldres"))
   (for ([i (in-directory (build-path project-root-dir "res"))])
     (define img (pict:scale-to-fit (pict:bitmap i) 300 300))
     (define type (case (path-get-extension i)
