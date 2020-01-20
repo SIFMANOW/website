@@ -30,7 +30,8 @@
          read read-syntax get-info
          page
          make-id
-         ref-id)
+         ref-id
+         project-root-dir)
 
 (define (header #:rest [rest '()] . v)
   @head{
@@ -253,8 +254,16 @@
 
 (module* lang racket
   (require (submod "..")
+           (prefix-in pict: pict)
+           racket/class
+           racket/file
+           racket/path
            markdown)
   (provide (all-from-out (submod ".."))
+           (all-from-out pict)
+           (all-from-out racket/class)
+           (all-from-out racket/file)
+           (all-from-out racket/path)
            markdown)
   (define (markdown . str)
     (literal (map xexpr->string (parse-markdown (apply string-append str))))))
